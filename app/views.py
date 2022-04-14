@@ -5,8 +5,11 @@ Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file creates your application.
 """
 
-from app import app
+from app import app, db, login_manager
 from flask import render_template, request, jsonify, send_file
+from flask_login import login_user, logout_user, current_user, login_required
+from werkzeug.security import check_password_hash
+from app.models import Users
 import os
 
 
@@ -19,12 +22,71 @@ def index():
     return jsonify(message="This is the beginning of our API")
 
 
+@app.route('/api/register', methods=['POST'])
+def register():
+    return ''
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    def login():
+    #form = LoginForm()
+        if request.method == "POST":
+            if  form.validate_on_submit():
+                username = form.username.data
+                password = form.password.data
+                user = Users.query.filter_by(username=username).first()
+                if user is not None and check_password_hash(user.password, password):
+                    login_user(user)
+                    #flash('You are now logged in.', 'success')
+                    return ''
+                else:
+                    return ''
+                    #flash('Something went wrong. Check your access info and try again.', 'danger')
+        return ''
+
+@app.route('/api/auth/logout', methods=['POST'])
+def logout():
+    logout_user()
+    return jsonify({
+        "message": "Log out successful"
+    })
 ###
 # The functions below should be applicable to all Flask apps.
 ###
 
 # Here we define a function to collect form errors from Flask-WTF
 # which we can later use
+
+@app.route('/api/cars', methods=['GET', 'POST'])
+def cars():
+    return ''
+
+@app.route('/api/cars/{car_id}', methods=['GET'])
+def singlecar(car_id):
+    return ''
+
+@app.route('/api/cars/{car_id}/favourite', methods=['POST'])
+def favourite(car_id):
+    return ''
+
+@app.route('/api/search', methods=['GET'])
+def singlecar():
+    return ''
+
+@app.route('/api/users/{user_id}', methods=['GET'])
+def singlecar(user_id):
+    return ''
+
+@app.route('/api/users/{user_id}/favourites', methods=['GET'])
+def singlecar(user_id):
+    return ''
+
+@app.route('/<file_name>.txt')
+def send_text_file(file_name):
+    """Send your static text file."""
+    file_dot_text = file_name + '.txt'
+    return app.send_static_file(file_dot_text)
+
 def form_errors(form):
     error_messages = []
     """Collects form errors"""
@@ -37,12 +99,6 @@ def form_errors(form):
             error_messages.append(message)
 
     return error_messages
-
-@app.route('/<file_name>.txt')
-def send_text_file(file_name):
-    """Send your static text file."""
-    file_dot_text = file_name + '.txt'
-    return app.send_static_file(file_dot_text)
 
 
 @app.after_request
